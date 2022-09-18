@@ -2,10 +2,12 @@
 	min-height: 100vh;
 	display: flex;
   width: 100%;
+
+  color: #7A869A;
 }
 
 .note {
-  width: 300px;
+  width: 100%;
 }
 .header {
 	height: 100px;

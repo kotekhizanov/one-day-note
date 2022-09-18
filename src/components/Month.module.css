@@ -1,0 +1,19 @@
+.month_grid {
+	display: grid;
+	grid-template-columns: auto auto auto auto auto auto auto;
+    
+	width: 700px;
+    box-sizing: border-box;
+}
+
+.head_block {
+	background-color: #F4F5F7;
+	height: 40px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight:bold;
+	border: 1px solid #dfe1e6;
+	
+	
+}

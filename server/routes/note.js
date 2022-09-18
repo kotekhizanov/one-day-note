@@ -36,7 +36,7 @@ routes.route("/note/write").post(function (req, response) {
 	let db_connect = dbo.getDb();
 	let notes = db_connect.collection("notes");
 
-	let query = { _id: new Date(req.body.date) };
+	let query = { _id: new Date(req.body._id) };
 	notes.findOne(query, function (err, res) {
 		if (res) {
 			let newvalues = {
@@ -51,7 +51,7 @@ routes.route("/note/write").post(function (req, response) {
 			});
 		} else {
 			let myobj = {
-				_id: new Date(req.body.date),
+				_id: new Date(req.body._id),
 				content: req.body.content,
 				tags: req.body.tags,
 			};
