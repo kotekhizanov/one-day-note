@@ -1,18 +1,10 @@
-:root {
-    /* month */
-	--month-header-height: 40px;
-	--month-block-width: 140px;
-	--month-block-height: 140px;
 
-    /* week */
-	--week-header-height: 40px;
-    --week-times-width: 40px;
-    --week-block-width: 140px;
-    --week-block-height: 55px;
-}
 
-.display_linebreak {
-    white-space: pre-line;
+.content {
+    content: pre-line;
+    overflow: hidden;
+    height: calc(var(--month-block-height) - 57px);
+    font-size: 12px;
 }
 
 .month_block {
@@ -22,4 +14,5 @@
     box-sizing: border-box;
     position: relative;
     padding: 10px 0 0 10px;
+    cursor: pointer;
 }

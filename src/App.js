@@ -6,6 +6,7 @@ import MonthNote from "./components/MonthNote";
 
 function App() {
 	let currentDate = new Date();
+
 	const [monthDate, setMonthDate] = useState(
 		new Date(
 			`${currentDate.getFullYear()}-${
@@ -16,7 +17,10 @@ function App() {
 		)
 	);
 	const [monthNotes, setMonthNotes] = useState([]);
-	const [noteId, setNoteId] = useState("");
+	const [noteId, setNoteId] = useState('');
+	const [noteDay, setNoteDay] = useState('');
+	const [content, setContent] = useState('');
+
 
 	useEffect(() => {
 		async function fetchData() {
@@ -57,6 +61,12 @@ function App() {
 				iDate.setDate(iDate.getDate() + 1);
 			}
 			setMonthNotes(_monthNotes);
+
+			setNoteId(`${currentDate.getFullYear()}-${
+				currentDate.getMonth() + 1 >= 10
+					? currentDate.getMonth() + 1
+					: "0" + (currentDate.getMonth() + 1)
+			}-${currentDate.getDate()}T00:00:00.000Z`);
 		}
 
 		fetchData();
@@ -65,13 +75,48 @@ function App() {
 	}, []);
 
 	const daySelect = (id) => {
+		writeNote();
 		setNoteId(id);
 	};
+	
+	useEffect(() => {
+		let noteDayDate = new Date(noteId);
+		setNoteDay(`${noteDayDate.getDate()} ${noteDayDate.getMonth()+1} ${noteDayDate.getFullYear()}`);
+		const foundElement = monthNotes.find((element) => element._id === noteId);
+		if (foundElement){
+			setContent(foundElement.content);
+			document.getElementById('content').focus();
+		}
+
+	}, [noteId]);
+
+	const contentOnChangeHandler = (element) => {
+		setContent(element.target.value);
+	};
+
+	useEffect(() => {
+		const _monthNotes = [...monthNotes];
+		const foundElement = _monthNotes.find((element) => element._id === noteId);
+		if (foundElement){
+			foundElement.content = content;
+		}
+
+		setMonthNotes(_monthNotes);
+
+		const identifier = setTimeout(() => {
+			writeNote();
+			console.log("write");
+		}, 2000);
+
+		return (()=> {
+			clearTimeout(identifier);
+		});
+	}, [content]);
 
 	const writeNote = async () => {
 		let noteObject = {
 			_id: noteId,
-			content: document.getElementById("content").value,
+			content: content,
 		};
 
 		await fetch("http://localhost:5000/note/write", {
@@ -83,21 +128,23 @@ function App() {
 		}).catch((error) => {
 			window.alert(error);
 			return;
-		});
+		}).then(
+			console.log('write end')
+		);
 	};
 
 	if (monthNotes.length === 0) {
-		return <h1>One Dae Note</h1>;
+		return <h1>One Day Note</h1>;
 	} else {
 		return (
 			<div className="App">
-				<div className="note">
-					<div>{noteId}</div>
-					<textarea id="content"></textarea>
-					<input type="button" value="button" onClick={writeNote} />
-				</div>
 				<div className="month">
 					<MonthGrid notes={monthNotes} daySelect={daySelect} />
+				</div>
+				<div className="note">
+					<div className="note_date">{noteDay}</div>
+					<textarea id="content" onChange={contentOnChangeHandler} value={content} placeholder="Write about your day here..."></textarea>
+					<input type="button" value="button" onClick={writeNote} />
 				</div>
 			</div>
 		);

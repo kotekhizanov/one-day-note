@@ -9,7 +9,7 @@ const MonthNote = (props) => {
     return (
         <div className={styles.month_block} id={props._id} onClick={onClick}>
             <div>{day}</div>
-            <div className={styles.display_linebreak}>{props.content}</div>
+            <div className={styles.content}>{props.content}</div>
         </div>
     )
 }
