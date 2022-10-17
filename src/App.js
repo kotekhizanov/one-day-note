@@ -5,6 +5,26 @@ import MonthGrid from "./components/Month";
 import MonthNote from "./components/MonthNote";
 
 function App() {
+	const monthNames = [
+		"January",
+		"February",
+		"March",
+		"April",
+		"May",
+		"June",
+		"July",
+		"August",
+		"September",
+		"October",
+		"November",
+		"December",
+	];
+
+	// function getFirstDayPreviousMonth() {
+	// 	const date = new Date();
+	// 	return new Date(date.getFullYear(), date.getMonth() - 1, 1);
+	// }
+	// let currentDate = getFirstDayPreviousMonth();
 	let currentDate = new Date();
 
 	const [monthDate, setMonthDate] = useState(
@@ -17,10 +37,9 @@ function App() {
 		)
 	);
 	const [monthNotes, setMonthNotes] = useState([]);
-	const [noteId, setNoteId] = useState('');
-	const [noteDay, setNoteDay] = useState('');
-	const [content, setContent] = useState('');
-
+	const [noteId, setNoteId] = useState("");
+	const [noteDay, setNoteDay] = useState("");
+	const [content, setContent] = useState("");
 
 	useEffect(() => {
 		async function fetchData() {
@@ -43,6 +62,10 @@ function App() {
 			}
 			const notes = await response.json();
 
+			console.log(notes);
+			console.log(startDate);
+			console.log(endDate);
+
 			let _monthNotes = [];
 			let iDate = new Date(startDate.getTime());
 			while (iDate <= endDate) {
@@ -60,34 +83,40 @@ function App() {
 				}
 				iDate.setDate(iDate.getDate() + 1);
 			}
+			console.log(_monthNotes);
 			setMonthNotes(_monthNotes);
 
-			setNoteId(`${currentDate.getFullYear()}-${
-				currentDate.getMonth() + 1 >= 10
-					? currentDate.getMonth() + 1
-					: "0" + (currentDate.getMonth() + 1)
-			}-${currentDate.getDate()}T00:00:00.000Z`);
+			// setNoteId(
+			// 	`${currentDate.getFullYear()}-${
+			// 		currentDate.getMonth() + 1 >= 10
+			// 			? currentDate.getMonth() + 1
+			// 			: "0" + (currentDate.getMonth() + 1)
+			// 	}-${currentDate.getDate()}T00:00:00.000Z`
+			// );
 		}
 
 		fetchData();
 
 		return;
-	}, []);
+	}, [monthDate]);
 
 	const daySelect = (id) => {
 		writeNote();
 		setNoteId(id);
 	};
-	
+
 	useEffect(() => {
 		let noteDayDate = new Date(noteId);
-		setNoteDay(`${noteDayDate.getDate()} ${noteDayDate.getMonth()+1} ${noteDayDate.getFullYear()}`);
+		setNoteDay(
+			`${noteDayDate.getDate()} ${
+				noteDayDate.getMonth() + 1
+			} ${noteDayDate.getFullYear()}`
+		);
 		const foundElement = monthNotes.find((element) => element._id === noteId);
-		if (foundElement){
+		if (foundElement) {
 			setContent(foundElement.content);
-			document.getElementById('content').focus();
+			document.getElementById("content").focus();
 		}
-
 	}, [noteId]);
 
 	const contentOnChangeHandler = (element) => {
@@ -97,7 +126,7 @@ function App() {
 	useEffect(() => {
 		const _monthNotes = [...monthNotes];
 		const foundElement = _monthNotes.find((element) => element._id === noteId);
-		if (foundElement){
+		if (foundElement) {
 			foundElement.content = content;
 		}
 
@@ -108,9 +137,9 @@ function App() {
 			console.log("write");
 		}, 2000);
 
-		return (()=> {
+		return () => {
 			clearTimeout(identifier);
-		});
+		};
 	}, [content]);
 
 	const writeNote = async () => {
@@ -125,12 +154,24 @@ function App() {
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(noteObject),
-		}).catch((error) => {
-			window.alert(error);
-			return;
-		}).then(
-			console.log('write end')
-		);
+		})
+			.catch((error) => {
+				window.alert(error);
+				return;
+			})
+			.then(console.log("write end"));
+	};
+
+	const arrowLeftClickHandler = () => {
+		setMonthDate((monthDate) => {
+			return new Date(monthDate.setMonth(monthDate.getMonth() - 1));
+		});
+	};
+
+	const arrowRightClickHandler = () => {
+		setMonthDate((monthDate) => {
+			return new Date(monthDate.setMonth(monthDate.getMonth() + 1));
+		});
 	};
 
 	if (monthNotes.length === 0) {
@@ -139,11 +180,21 @@ function App() {
 		return (
 			<div className="App">
 				<div className="month">
+					<div className="month-navigation">
+						<div className="month-navigation-arrow" onClick={arrowLeftClickHandler}>&lt;&lt;</div>
+						<div className="month-navigation-text">{monthNames[monthDate.getMonth()]}</div>
+						<div className="month-navigation-arrow" onClick={arrowRightClickHandler}>&gt;&gt;</div>
+					</div>
 					<MonthGrid notes={monthNotes} daySelect={daySelect} />
 				</div>
 				<div className="note">
 					<div className="note_date">{noteDay}</div>
-					<textarea id="content" onChange={contentOnChangeHandler} value={content} placeholder="Write about your day here..."></textarea>
+					<textarea
+						id="content"
+						onChange={contentOnChangeHandler}
+						value={content}
+						placeholder="Write about your day here..."
+					></textarea>
 					<input type="button" value="button" onClick={writeNote} />
 				</div>
 			</div>

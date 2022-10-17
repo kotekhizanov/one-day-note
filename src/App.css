@@ -19,8 +19,27 @@
 .header {
 	height: 100px;
 }
+
 .month {
 	width: 100%;
+}
+.month-navigation{
+  display: grid;
+	grid-template-columns: auto auto auto;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
+}
+.month-navigation > div{
+  padding: 10px;
+}
+
+.month-navigation-arrow{
+  cursor: pointer;
+}
+.month-navigation-text{
+  text-align: center;
+  width: 150px;
 }
 
 .note_date{
